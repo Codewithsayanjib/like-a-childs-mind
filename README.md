@@ -1,67 +1,83 @@
-# Like a Child's Mind
+<div align="center">
 
-**How Collateral Damage in Machine Unlearning Scales Down to Small Language Models**
+# 🧠 Like a Child's Mind
 
-Sayanjib Sur, Swastika Ghosh, Surajit Marddnya, Popita Mukherjee · Jadavpur University
-Submitted to the MULVA 2026 Workshop (ICVGIP 2026).
+### *How Collateral Damage in Machine Unlearning Scales Down to Small Language Models*
+
+![Venue](https://img.shields.io/badge/MULVA-2026-6E8B7A?style=flat-square)
+![Models](https://img.shields.io/badge/models-SmolLM2%20·%20Qwen2.5-C06C3E?style=flat-square)
+![Compute](https://img.shields.io/badge/Colab-A100-2F4858?style=flat-square)
+![Status](https://img.shields.io/badge/paper-in%20review-E0A458?style=flat-square)
+
+*Sayanjib Sur · Swastika Ghosh · Surajit Marddnya · Popita Mukherjee*
+**Jadavpur University**
+
+</div>
 
 ---
 
-## What this is
+## ✦ The idea in one line
 
-Almost all machine-unlearning methods are built and tuned on 7B+ models, yet the models that
-run on phones and edge devices are far smaller. This project asks what unlearning *costs* at that
-scale. Across two model families and three sizes each (**SmolLM2** 135M/360M/1.7B and
-**Qwen2.5** 0.5B/1.5B/3B), evaluated at a **matched forgetting level**, we find that the
-collateral damage to unrelated general knowledge grows sharply as models shrink — and that a
-lightweight **Fisher-masked** intervention, which freezes the weights most critical for retention,
-measurably reduces this damage, most at the smallest scale.
+> Small language models forget **messily** — erasing one fact damages unrelated knowledge far more
+> than it does in large models, because in a compact model those memories share the same weights.
 
-## Repository layout
+Almost all machine-unlearning methods are built and tuned on 7B+ models. But the models that run on
+phones and edge devices are one to two orders of magnitude smaller — and privacy law applies to them
+just the same. We ask what unlearning actually **costs** at that scale, and find the cost scales the
+wrong way.
+
+## ✦ What we find
+
+<div align="center">
+
+| | **135M** | **360M** | **1.7B** |
+|:--|:--:|:--:|:--:|
+| General knowledge kept after unlearning *(SmolLM2, NPO)* | **34%** | 44% | **59%** |
+| Damage per unit forgotten *(ratio κ, ↓ better)* | **1.09** | 0.83 | **0.57** |
+
+</div>
+
+- **Smaller ⇒ more collateral damage.** At a *matched forgetting level*, a 135M model gives up nearly
+  two-thirds of its general knowledge; a 1.7B model, less than half.
+- **The mechanism is capacity.** The weights critical for forgetting and for retaining overlap an
+  order of magnitude above chance — the two objectives share directions.
+- **A cheap fix helps.** Freezing the most retention-critical weights with a **Fisher mask** lifts
+  retained knowledge by **+43%** at 135M, at the same forgetting level — most where models are
+  smallest and the damage is worst.
+
+## ✦ Repository
 
 ```
 .
-├── paper/          LaTeX source (ACM sigconf) + compiled PDF
-│   ├── main.tex
-│   ├── references.bib
-│   ├── main.pdf
-│   └── README.md   build instructions
-├── notebooks/      Colab notebooks (run on an A100)
-│   ├── NB1_scaling_benchmark.ipynb        baselines + Fisher diagnostic
-│   ├── NB2_fisher_masked_unlearning.ipynb FM-NPO (3-epoch)
-│   ├── NB2b_fisher_masked_ep8.ipynb       FM-NPO (matched forgetting)
-│   └── NB3_final_results.ipynb            final runs + all paper assets
-└── docs/           execution plans
+├── notebooks/   Colab notebooks (A100) that produce every result
+│   ├── NB1_scaling_benchmark.ipynb         baselines + Fisher diagnostic
+│   ├── NB2_fisher_masked_unlearning.ipynb  Fisher-Masked NPO (3-epoch)
+│   ├── NB2b_fisher_masked_ep8.ipynb        Fisher-Masked NPO (matched forgetting)
+│   └── NB3_final_results.ipynb             final runs + all paper assets
+└── docs/        execution plans
 ```
 
-## Reproducing the results
+> 📄 **The paper PDF will be added here once it is finalized.**
 
-The notebooks are written for **Google Colab with an A100 GPU** and checkpoint to Google Drive.
+## ✦ Reproducing the results
 
-1. Run `notebooks/NB1_scaling_benchmark.ipynb` first — it memorizes each model, runs the
-   GradDiff/NPO baselines at matched forgetting, and saves the Fisher importances. Set `DRIVE_ROOT`
-   in cell 1 to a fresh Drive folder.
-2. Run `notebooks/NB3_final_results.ipynb` — it loads NB1's artifacts, runs Fisher-Masked NPO and
-   the ablation, and writes every figure and table (plus `paper_assets/results.json`).
+The notebooks run on **Google Colab with an A100 GPU** and checkpoint to Google Drive — the whole
+study takes a few A100-hours.
 
-`NB2`/`NB2b` are intermediate experiments kept for reference. The whole study runs in a few
-A100-hours.
+1. **`notebooks/NB1_scaling_benchmark.ipynb`** — memorizes each model, runs the GradDiff/NPO
+   baselines at matched forgetting, and saves the Fisher importances. Set `DRIVE_ROOT` in cell 1 to a
+   fresh Drive folder.
+2. **`notebooks/NB3_final_results.ipynb`** — loads NB1's artifacts, runs Fisher-Masked NPO and the
+   ablation, and writes every figure and table (plus `paper_assets/results.json`).
 
-## Building the paper
+`NB2` / `NB2b` are intermediate experiments kept for reference.
 
-```bash
-cd paper
-tectonic main.tex      # or: pdflatex main; bibtex main; pdflatex main; pdflatex main
-```
-
-`acmart.cls` and `ACM-Reference-Format.bst` ship with Overleaf and TeX Live, so they are not
-vendored here. See `paper/README.md` for details.
-
-## Citation
+## ✦ Citation
 
 ```bibtex
 @inproceedings{sur2026childsmind,
-  title     = {Like a Child's Mind: How Collateral Damage in Machine Unlearning Scales Down to Small Language Models},
+  title     = {Like a Child's Mind: How Collateral Damage in Machine Unlearning
+               Scales Down to Small Language Models},
   author    = {Sur, Sayanjib and Ghosh, Swastika and Marddnya, Surajit and Mukherjee, Popita},
   booktitle = {MULVA Workshop at ICVGIP},
   year      = {2026}

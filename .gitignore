@@ -10,6 +10,9 @@
 *.fdb_latexmk
 *.toc
 
+# Paper source — kept local, added to the repo (PDF only) once finalized
+/paper/
+
 # Packaging / archives
 *.zip
 
